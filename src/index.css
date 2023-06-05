@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+#toast {
+    animation: ToastKeyFrames ease-in-out 1s;
+}
+
+@keyframes ToastKeyframes {
+    from {
+        margin-top: -30px;
+        transform: scale(0.6);
+    }
+    to {
+        margin-top: 0px;
+        transform: scale(1);
+    }
+}
+
+.ant-popover-inner {
+    box-shadow: none;
+  }
+
+@font-face {
+    font-family: 'General Sans';
+    src: url('./assets/fonts/GeneralSans-Variable.ttf');
+}
+
+
+*{
+    font-family:  'General Sans', sans-serif;
+}
