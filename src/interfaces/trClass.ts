@@ -1,8 +1,8 @@
 export interface TrClass {
   createdAt: Date;
-  date: string;
+  date: string | Date;
   duration: number;
-  files: Files;
+  files: Files[];
   id: string;
   name: string;
   room: string;

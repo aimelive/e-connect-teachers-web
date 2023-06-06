@@ -1,19 +1,11 @@
-import { Empty, Modal, Table } from "antd";
+import { Table } from "antd";
 import Column from "antd/es/table/Column";
-import { ChangeEvent, FC, useState } from "react";
-import { Link } from "react-router-dom";
+import { FC, useState } from "react";
 import { UsersListProvider } from "../../../providers/UsersListProvider";
-import {
-  arrayRemove,
-  arrayUnion,
-  collection,
-  doc,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { firestore } from "../../../lib/config";
 import { useToast } from "../../../providers/GlobalContext";
+import IsAddingTeacherModal from "../../../components/shared/IsAddingTeacherModal";
 
 const columns = [
   {
@@ -88,12 +80,6 @@ export const TeachersList: FC<{ teachers: string[]; schoolId: string }> = ({
     }
   };
 
-  const [searchQuery, setSearchQuery] = useState<string>("");
-
-  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
-
   return (
     <div className="mt-6  py-6 bg-white rounded-md">
       <div className="flex items-center justify-between">
@@ -104,70 +90,12 @@ export const TeachersList: FC<{ teachers: string[]; schoolId: string }> = ({
         >
           +&nbsp;&nbsp;Add
         </button>
-        <Modal
+        <IsAddingTeacherModal
           open={isAddingTeacher}
-          onOk={() => setIsAddingTeacher(false)}
-          onCancel={() => setIsAddingTeacher(false)}
-          footer={null}
-        >
-          <h1 className="font-bold text-lg">Add a new teacher</h1>
-          <p>
-            If the teacher you want to add in the system, first add them{" "}
-            <Link to={"/dashboard/users#new"}>
-              <span className="text-blue-500">here</span>
-            </Link>
-          </p>
-          <div className="teachers bg-gray-50 px-2 mt-2">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={handleSearch}
-              className="rounded-md bg-gray-50  outline-none   px-4 py-2   w-full text-sm shadow-sm"
-              placeholder="Search teacher"
-            />
-            <UsersListProvider
-              customQuery={query(
-                collection(firestore, "users"),
-                where("names", ">=", searchQuery),
-                where("names", "<=", searchQuery + "\uf8ff")
-              )}
-            >
-              {(value) => {
-                if (value.loading) {
-                  return <div>Loading, please wait....</div>;
-                }
-                if (value.error) {
-                  return <div>{value.error}</div>;
-                }
-                const users = value.users.filter(
-                  (tr) => !teachers.includes(tr.id)
-                );
-                if (!users.length) {
-                  return <Empty description="Teacher not found" />;
-                }
-                return users.map((data, index) => (
-                  <div
-                    key={index}
-                    className="py-2 hover:bg-brand/20 px-4 cursor-pointer rounded-md flex items-center space-x-2 my-1"
-                    onClick={() => handleAddTeacher(data.id)}
-                  >
-                    <img
-                      src={data.profile_pic}
-                      alt="#"
-                      width={40}
-                      height={40}
-                      className="w-10 h-10 rounded-full "
-                    />
-                    <div>
-                      <h1 className=" font-bold">{data.names}</h1>
-                      <p className="">{data.role.name} </p>
-                    </div>
-                  </div>
-                ));
-              }}
-            </UsersListProvider>
-          </div>
-        </Modal>
+          onClose={() => setIsAddingTeacher(false)}
+          onAdd={(id) => handleAddTeacher(id)}
+          exclude={teachers}
+        />
       </div>
       <UsersListProvider
         where={{

@@ -196,7 +196,7 @@ const UserDetailsSection: FC<{ account: Account }> = ({ account }) => {
       <h1 className=" font-bold text-lg my-6">Danger zone</h1>
       <div className="flex items-center justify-between bg-red-50 rounded-md p-4">
         <div>
-          <h1 className=" font-bold">Delete school</h1>
+          <h1 className=" font-bold">Delete user</h1>
           <p className="">This action can't be undone </p>
         </div>
         <button

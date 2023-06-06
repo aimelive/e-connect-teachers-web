@@ -1,4 +1,4 @@
-import { collection, onSnapshot, query } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import React, { createContext, useEffect, useState } from "react";
 import { firestore } from "../lib/config";
 import { useCurrentUser } from "../lib/hooks/auth";
@@ -30,7 +30,7 @@ export const TeacherClassesProvider = ({
   const { account } = useCurrentUser();
 
   useEffect(() => {
-    const q = query(collection(firestore, "classes"));
+    const q = query(collection(firestore, "classes"), where("id", "!=", ""));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const trClassesData: TrClass[] = [];
       querySnapshot.forEach((doc) => {

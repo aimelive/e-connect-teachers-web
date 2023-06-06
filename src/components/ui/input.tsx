@@ -5,6 +5,7 @@ interface InputProps {
   name: string;
   placeholder: string;
   disabled?: boolean;
+  hideLabel?: boolean;
   type?: string;
   value: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => string;
@@ -16,16 +17,19 @@ const TextInput: FC<InputProps> = ({
   type,
   value,
   onChange,
+  hideLabel,
   name,
   disabled,
 }) => {
   const [error, setError] = useState("");
   return (
-    <div className="flex flex-col space-y-1">
-      <span className="flex items-center space-x-1">
-        <label htmlFor={name}>{label}</label>
-        <span className="text-red-500">*</span>
-      </span>
+    <div className="flex flex-col space-y-1 w-full">
+      {!hideLabel && (
+        <span className="flex items-center space-x-1">
+          <label htmlFor={name}>{label}</label>
+          <span className="text-red-500">*</span>
+        </span>
+      )}
 
       <input
         type={type || "text"}
