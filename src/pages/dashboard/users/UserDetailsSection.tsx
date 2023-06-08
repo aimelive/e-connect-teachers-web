@@ -90,7 +90,7 @@ const UserDetailsSection: FC<{ account: Account }> = ({ account }) => {
         </button>
         <h1 className="font-bold text-xl">{account.names}</h1>
       </div>
-      <div className="grid grid-cols-2 gap-x-10 pb-6 border-b mt-3">
+      <div className="grid md:grid-cols-2 gap-x-10 pb-6 border-b mt-3">
         <div className="">
           <div className="my-3">
             <h1 className="font-[500]">Names</h1>
@@ -194,7 +194,7 @@ const UserDetailsSection: FC<{ account: Account }> = ({ account }) => {
       </div>
       <hr />
       <h1 className=" font-bold text-lg my-6">Danger zone</h1>
-      <div className="flex items-center justify-between bg-red-50 rounded-md p-4">
+      <div className="flex items-start space-y-2 sm:space-y-0 sm:items-center flex-col sm:flex-row justify-between bg-red-50 rounded-md p-4">
         <div>
           <h1 className=" font-bold">Delete user</h1>
           <p className="">This action can't be undone </p>

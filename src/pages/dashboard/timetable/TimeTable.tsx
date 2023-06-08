@@ -4,10 +4,13 @@ import { Keys } from "../../../lib/keys";
 import Column from "antd/es/table/Column";
 import { TrClass } from "../../../interfaces/trClass";
 import SingleUserContextProvider from "../../../providers/SingleUserContextProvider";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import SingleClassTileActions from "./SingleClassTileActions";
 import AddClassFormSidebar, { SidebarProps } from "./AddClassFormSidebar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { firestore } from "../../../lib/config";
+import { useToast } from "../../../providers/GlobalContext";
 
 const timeTableColumns: {
   title: string;
@@ -29,14 +32,14 @@ const timeTableColumns: {
     key: "date",
     render: (value: any) => {
       return (
-        <span>
-          {value.toDate().toLocaleDateString("en-GB", {
+        <span className="b whitespace-nowrap">
+          {value.toLocaleDateString("en-GB", {
             day: "numeric",
             month: "short",
             year: "numeric",
           })}
           <br />
-          {value.toDate().toLocaleTimeString("en-US", {
+          {value.toLocaleTimeString("en-US", {
             hour: "numeric",
             minute: "2-digit",
             hour12: true,
@@ -123,6 +126,34 @@ export default function TimeTablePage() {
       onClose: handleCloseSidebar,
     }));
   }
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
+  const show = useToast();
+
+  useEffect(() => {
+    const getClass = async (id: string) => {
+      try {
+        const document = await getDoc(doc(firestore, "classes", id));
+        const trClass: TrClass = document.data() as any;
+        if (!document.exists() || !document.data() || !trClass.id) {
+          show({
+            message: "Oops, we couldn't find the class you're lloking for.",
+            type: "error",
+          });
+          return;
+        }
+        handleOpenSidebar({ ...trClass, date: (trClass.date as any).toDate() });
+      } catch (error: any) {
+        show({
+          message: error.message || Keys.DEFAULT_ERROR_MESSAGE,
+          type: "error",
+        });
+      }
+    };
+    if (id) {
+      getClass(id);
+    }
+  }, [id]);
 
   return (
     <div>
@@ -135,7 +166,7 @@ export default function TimeTablePage() {
           Add New
         </button>
       </div>
-      <div className="bg-white rounded-md">
+      <div className="bg-white rounded-md w-full">
         <TeacherClassesProvider>
           {(value) => {
             if (value.isLoading) {
@@ -172,6 +203,7 @@ export default function TimeTablePage() {
                   size: "small",
                   pageSize: 6,
                 }}
+                className="w-full overflow-x-auto"
               >
                 {timeTableColumns.map((column) => (
                   <Column {...column} />

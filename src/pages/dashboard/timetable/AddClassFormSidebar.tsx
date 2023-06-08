@@ -59,7 +59,7 @@ const AddClassFormSidebar: FC<SidebarProps> = ({ open, trClass, onClose }) => {
       setFormData({
         name: trClass.name,
         schoolId: trClass.schoolId,
-        date: (trClass.date as any)?.toDate() || new Date(trClass.date),
+        date: trClass.date,
         schoolName: trClass.schoolName,
         files: trClass.files.map((file) => file.link),
         room: trClass.room,
@@ -102,8 +102,8 @@ const AddClassFormSidebar: FC<SidebarProps> = ({ open, trClass, onClose }) => {
       const newTrClass: TrClass = {
         name: formData.name,
         date: formData.date,
-        duration: formData.duration,
-        createdAt: (trClass?.date as any)?.toDate() || new Date(),
+        duration: Number(formData.duration),
+        createdAt: trClass?.createdAt || new Date(),
         updatedAt: new Date(),
         room: formData.room,
         schoolId: formData.schoolId,
@@ -172,7 +172,11 @@ const AddClassFormSidebar: FC<SidebarProps> = ({ open, trClass, onClose }) => {
       placement={"right"}
       closable={true}
       onClose={onClose}
-      title="New Class"
+      // width={350}
+      contentWrapperStyle={{
+        width: window.innerWidth < 768 ? "100%" : "30%",
+      }}
+      title={trClass ? "Update Class" : "New Class"}
     >
       <form className="flex flex-col space-y-4" onSubmit={handleSubmit}>
         <TextInput
@@ -357,15 +361,17 @@ const AddClassFormSidebar: FC<SidebarProps> = ({ open, trClass, onClose }) => {
               if (value.error) {
                 return (
                   <SchoolsProvider>
-                    <AddSchoolInput
-                      onChange={(id, name) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          schoolId: id,
-                          schoolName: name,
-                        }))
-                      }
-                    />
+                    {() => (
+                      <AddSchoolInput
+                        onChange={(id, name) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            schoolId: id,
+                            schoolName: name,
+                          }))
+                        }
+                      />
+                    )}
                   </SchoolsProvider>
                 );
               }
@@ -401,7 +407,11 @@ const AddClassFormSidebar: FC<SidebarProps> = ({ open, trClass, onClose }) => {
           type="submit"
           disabled={state.loading}
         >
-          {state.loading ? "Please wait..." : "Save changes"}
+          {state.loading
+            ? "Please wait..."
+            : trClass
+            ? "Save changes"
+            : "Add Class"}
         </button>
       </form>
     </Drawer>

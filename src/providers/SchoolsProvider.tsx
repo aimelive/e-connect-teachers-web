@@ -13,7 +13,7 @@ const SchoolsContext = createContext<ContextValue>({ schools: [] });
 export const SchoolsProvider = ({
   children,
 }: {
-  children: React.ReactNode;
+  children: (value: ContextValue) => React.ReactNode;
 }) => {
   const [schools, setSchools] = useState<School[]>([]);
   const { account } = useCurrentUser();
@@ -40,7 +40,7 @@ export const SchoolsProvider = ({
 
   return (
     <SchoolsContext.Provider value={{ schools }}>
-      {children}
+      {children({ schools })}
     </SchoolsContext.Provider>
   );
 };

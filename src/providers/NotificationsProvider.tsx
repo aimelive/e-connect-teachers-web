@@ -29,7 +29,7 @@ export const NotificationsProvider = ({
         const data = doc.data() as any;
         notificationData.push({
           ...data,
-          createdAt: new Date(data.createdAt.seconds * 1000),
+          createdAt: data.createdAt.toDate(),
         });
       });
       setNotifications(notificationData);
@@ -48,5 +48,9 @@ export const NotificationsProvider = ({
 };
 
 export const useNotifications = () => {
-  return useContext(NotificationContext);
+  const { notifications } = useContext(NotificationContext);
+  return {
+    notifications,
+    unread: notifications.filter((n) => !n.viewed).length,
+  };
 };

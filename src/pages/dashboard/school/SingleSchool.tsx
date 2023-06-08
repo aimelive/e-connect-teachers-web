@@ -46,7 +46,7 @@ export default function SingleSchool() {
   };
 
   return (
-    <div className="p-10 rounded-md bg-white">
+    <div className="p-5 md:p-10 rounded-md bg-white w-full overflow-hidden">
       <SingleSchoolContextProvider id={id || ""}>
         {(value) => {
           if (value.isLoading) {

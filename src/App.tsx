@@ -7,7 +7,6 @@ import Users from "./pages/dashboard/users/Users";
 import Teachers from "./pages/dashboard/teachers";
 import Assistants from "./pages/dashboard/assistants";
 import PoManagers from "./pages/dashboard/po-managers";
-import Messages from "./pages/dashboard/messages";
 import Events from "./pages/dashboard/events";
 import Announcements from "./pages/dashboard/announcements";
 import Splash from "./components/Global/Splash";
@@ -19,6 +18,8 @@ import SingleUser from "./pages/dashboard/users/SingleUser";
 import HomePage from "./pages/dashboard/HomePage";
 import DashboardLayout from "./pages/dashboard/layout/Layout";
 import TimeTablePage from "./pages/dashboard/timetable/TimeTable";
+import MessagesPage from "./pages/dashboard/messages/Messages";
+import SingleClass from "./pages/dashboard/timetable/SingleClass";
 
 function App() {
   return (
@@ -57,6 +58,10 @@ function App() {
                         element={<SingleUser />}
                       />
                       <Route
+                        path="/dashboard/time-table/:id"
+                        element={<SingleClass />}
+                      />
+                      {/* <Route
                         path="/dashboard/teachers"
                         element={<Teachers />}
                       />
@@ -67,16 +72,16 @@ function App() {
                       <Route
                         path="/dashboard/po-managers"
                         element={<PoManagers />}
-                      />
+                      /> */}
                       <Route
                         path="/dashboard/messages"
-                        element={<Messages />}
+                        element={<MessagesPage />}
                       />
-                      <Route path="/dashboard/events" element={<Events />} />
+                      {/* <Route path="/dashboard/events" element={<Events />} />
                       <Route
                         path="/dashboard/announcements"
                         element={<Announcements />}
-                      />
+                      /> */}
                       <Route
                         path="/dashboard/time-table"
                         element={<TimeTablePage />}

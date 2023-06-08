@@ -119,6 +119,7 @@ export const TeachersList: FC<{ teachers: string[]; schoolId: string }> = ({
                 size: "small",
                 pageSize: 6,
               }}
+              className="w-full overflow-x-auto"
             >
               {columns.map((column) => (
                 <Column {...column} />

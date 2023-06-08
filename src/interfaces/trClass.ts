@@ -1,6 +1,6 @@
 export interface TrClass {
   createdAt: Date;
-  date: string | Date;
+  date: Date;
   duration: number;
   files: Files[];
   id: string;

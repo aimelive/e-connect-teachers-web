@@ -37,11 +37,18 @@ export const TeacherClassesProvider = ({
         const data = doc.data() as any;
         trClassesData.push({
           ...data,
+          date: data.date.toDate(),
           createdAt: new Date(data.createdAt.seconds * 1000),
           updatedAt: new Date(data.updatedAt.seconds * 1000),
         });
       });
-      setTrClasses({ trClasses: trClassesData, isLoading: false, error: null });
+      setTrClasses({
+        trClasses: trClassesData.sort(
+          (a, b) => b.date.getTime() - a.date.getTime()
+        ),
+        isLoading: false,
+        error: null,
+      });
     });
 
     return () => {

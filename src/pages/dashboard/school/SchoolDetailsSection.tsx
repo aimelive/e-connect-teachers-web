@@ -45,8 +45,22 @@ const SchoolDetailsSection: FC<{ school: School }> = ({ school }) => {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-x-10 pb-6 border-b mt-3">
+    <div className="grid md:grid-cols-2 gap-x-10 pb-6 border-b mt-3">
       <div className="">
+        <div className="my-3">
+          <h1 className="font-[500]">School Image</h1>
+          {!isEditing ? (
+            <img src={school.image} width={200} className="p-2" />
+          ) : (
+            <input
+              value={schoolData.image}
+              className="px-4 py-2 border-b border-slate-200 outline-none bg-gray-50 w-full"
+              disabled={loading}
+              onChange={handleChange}
+              name="image"
+            />
+          )}
+        </div>
         <div className="my-3">
           <h1 className="font-[500]">Location</h1>
           {!isEditing ? (
@@ -78,7 +92,14 @@ const SchoolDetailsSection: FC<{ school: School }> = ({ school }) => {
         <div className="my-3">
           <h1 className="font-[500]">Map Link</h1>
           {!isEditing ? (
-            <p className="p-2"> {school.address.mapLink}</p>
+            <a
+              className="p-2 underline overflow-hidden"
+              href={school.address.mapLink}
+              target="_blank"
+            >
+              {" "}
+              {school.address.mapLink}
+            </a>
           ) : (
             <input
               value={schoolData.address.mapLink}
@@ -89,8 +110,25 @@ const SchoolDetailsSection: FC<{ school: School }> = ({ school }) => {
             />
           )}
         </div>
+      </div>
+      <div>
         <div className="my-3">
-          <h1 className="font-[500]">Principal</h1>
+          <h1 className="font-[500]">Description</h1>
+          {!isEditing ? (
+            <p className="py-2 md:px-2">{school.description}</p>
+          ) : (
+            <textarea
+              value={schoolData.description}
+              className="px-4 py-2 border-b border-slate-200 outline-none bg-gray-50 w-full resize-none"
+              rows={4}
+              disabled={loading}
+              onChange={handleChange}
+              name="description"
+            />
+          )}
+        </div>
+        <div className="my-3">
+          <h1 className="font-[500]">Principal Name</h1>
           {!isEditing ? (
             <p className="p-2"> {school.principalName}</p>
           ) : (
@@ -103,34 +141,22 @@ const SchoolDetailsSection: FC<{ school: School }> = ({ school }) => {
             />
           )}
         </div>
+        <div>
+          <h1 className="font-[500]">Principal Phone number</h1>
+          {!isEditing ? (
+            <p className="p-2"> {school.principalPhone}</p>
+          ) : (
+            <input
+              value={schoolData.principalPhone}
+              className="px-4 py-2 border-b border-slate-200 outline-none bg-gray-50 w-full"
+              disabled={loading}
+              onChange={handleChange}
+              name="principalPhone"
+            />
+          )}
+        </div>
+      </div>
 
-        <h1 className="font-[500]">Phone number</h1>
-        {!isEditing ? (
-          <p className="p-2"> {school.principalPhone}</p>
-        ) : (
-          <input
-            value={schoolData.principalPhone}
-            className="px-4 py-2 border-b border-slate-200 outline-none bg-gray-50 w-full"
-            disabled={loading}
-            onChange={handleChange}
-            name="principalPhone"
-          />
-        )}
-      </div>
-      <div className="my-3">
-        <h1 className="font-[500]">Description</h1>
-        {!isEditing ? (
-          <p className="p-2"> {school.description}</p>
-        ) : (
-          <textarea
-            value={schoolData.description}
-            className="px-4 py-2 border-b border-slate-200 outline-none bg-gray-50 w-full resize-none h-full"
-            disabled={loading}
-            onChange={handleChange}
-            name="description"
-          />
-        )}
-      </div>
       <div className="flex items-center gap-4 mt-3">
         {!isEditing ? (
           <button

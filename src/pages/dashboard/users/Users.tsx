@@ -30,7 +30,7 @@ const initFormData: FormData = {
   tel: "",
 };
 
-export const NewSchool = () => {
+export const NewUser = () => {
   const [formData, setFormData] = useState<FormData>(initFormData);
   const [state, setState] = useState<State>(initState);
   const show = useToast();
@@ -98,10 +98,10 @@ export const NewSchool = () => {
   };
 
   return (
-    <div className="bg-white  px-10  py-4 rounded-md">
+    <div className="bg-white px-6 md:px-10  py-4 rounded-md">
       <h1 className=" font-bold my-2">Add a new user</h1>
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-2 gap-4 my-1">
+        <div className="grid md:grid-cols-2 gap-4 my-1">
           <TextInput
             label="Full Name"
             placeholder="John Doe"
@@ -217,7 +217,7 @@ const column = [
 ];
 export const UsersList = () => {
   return (
-    <div className="mt-6 px-10 py-6 bg-white rounded-md">
+    <div className="mt-6 px-6 md:px-10 py-6 bg-white rounded-md">
       <h1 className=" font-bold  my-2">Registered Users</h1>
       <UsersListProvider
         where={{
@@ -236,6 +236,7 @@ export const UsersList = () => {
           return (
             <Table
               columns={column}
+              className="w-full overflow-x-auto"
               dataSource={value.users.map((user) => ({
                 ...user,
                 info: { name: user.names, id: user.id },
@@ -253,10 +254,10 @@ export const UsersList = () => {
   );
 };
 
-export default function Schools() {
+export default function UsersPage() {
   return (
     <div>
-      <NewSchool />
+      <NewUser />
       <UsersList />
     </div>
   );

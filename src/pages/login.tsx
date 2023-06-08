@@ -35,9 +35,9 @@ export default function Login() {
   return (
     <div className="mx-auto max-w-screen-xl min-h-screen flex flex-col  items-center justify-around px-4 py-16 sm:px-6 lg:px-8">
       <Logo />
-      <div className="mx-auto mb-0 mt-8 w-[400px] space-y-4 bg-white border border-slate-200 p-6  rounded-lg">
+      <div className="mx-auto w-full sm:w-1/2 lg:w-1/3 bg-white space-y-4 border border-slate-200 p-6  rounded-lg">
         <div className="mx-auto max-w-lg ">
-          <h1 className="text-2xl font-bold sm:text-3xl">Login</h1>
+          <h1 className="text-2xl font-bold sm:text-3xl text-brand">Login</h1>
 
           <p className="mt-4 text-sm text-gray-500">
             Welcome back, login to continue

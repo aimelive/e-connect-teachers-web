@@ -100,10 +100,10 @@ export const NewSchool = () => {
   };
 
   return (
-    <div className="bg-white  px-10  py-4 rounded-md" id="new">
+    <div className="bg-white  p-6 md:px-10  py-4 rounded-md" id="new">
       <h1 className=" font-bold my-2">Add a new school</h1>
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-2 gap-4 my-1">
+        <div className="grid md:grid-cols-2 gap-4 my-1">
           <TextInput
             label="School name"
             name="name"
@@ -216,9 +216,10 @@ export const SchoolsList = () => {
   const { schools } = useSchools();
 
   return (
-    <div className="mt-6 px-10 py-6 bg-white rounded-md">
+    <div className="mt-6 p-4 md:px-10 md:py-6 bg-white rounded-md">
       <h1 className=" font-bold  my-2">Registered Schools</h1>
       <Table
+        className="w-full overflow-x-auto"
         columns={column}
         dataSource={schools.map((school) => ({
           ...school,
@@ -234,9 +235,7 @@ export default function Schools() {
   return (
     <div>
       <NewSchool />
-      <SchoolsProvider>
-        <SchoolsList />
-      </SchoolsProvider>
+      <SchoolsProvider>{(_value) => <SchoolsList />}</SchoolsProvider>
     </div>
   );
 }
