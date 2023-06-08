@@ -1,7 +1,7 @@
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { collection, onSnapshot, query } from "firebase/firestore";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { firestore } from "../lib/config";
-import { useCurrentUser } from "../lib/hooks/auth";
+// import { useCurrentUser } from "../lib/hooks/auth";
 import { School } from "../interfaces/school";
 
 interface ContextValue {
@@ -16,7 +16,7 @@ export const SchoolsProvider = ({
   children: (value: ContextValue) => React.ReactNode;
 }) => {
   const [schools, setSchools] = useState<School[]>([]);
-  const { account } = useCurrentUser();
+  // const { account } = useCurrentUser();
 
   useEffect(() => {
     const q = query(collection(firestore, "schools"));
