@@ -19,7 +19,7 @@ import DashboardLayout from "./pages/dashboard/layout/Layout";
 import TimeTablePage from "./pages/dashboard/timetable/TimeTable";
 import MessagesPage from "./pages/dashboard/messages/Messages";
 import SingleClass from "./pages/dashboard/timetable/SingleClass";
-import SchoolsPage from "./pages/dashboard/school/Schools";
+import SchoolsPage from "./pages/dashboard/school/schools";
 
 function App() {
   return (
