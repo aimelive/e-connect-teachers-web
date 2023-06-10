@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FC, FormEvent, useEffect, useState } from "react";
 import TextInput from "../../../components/ui/input";
 import { Table } from "antd";
 import { Link } from "react-router-dom";
@@ -228,7 +228,7 @@ export const SchoolsList = ({ schools }: { schools: School[] }) => {
   );
 };
 
-export default function SchoolsPage() {
+const SchoolsPage: FC = () => {
   const { role } = useCurrentUser();
   return (
     <div>
@@ -238,4 +238,6 @@ export default function SchoolsPage() {
       </SchoolsProvider>
     </div>
   );
-}
+};
+
+export default SchoolsPage;
