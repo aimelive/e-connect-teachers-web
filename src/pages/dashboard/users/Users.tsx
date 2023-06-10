@@ -9,6 +9,8 @@ import { firestore } from "../../../lib/config";
 import { addDoc, collection } from "firebase/firestore";
 import { Account } from "../../../interfaces/account";
 import { Keys } from "../../../lib/keys";
+import { useCurrentUser } from "../../../lib/hooks/auth";
+import { Role } from "../../../lib/utils";
 
 const initState: State = { loading: false, error: null };
 
@@ -25,12 +27,12 @@ const initFormData: FormData = {
   names: "",
   email: "",
   password: "",
-  role: "teacher",
+  role: "Teacher",
   profile_pic: "",
   tel: "",
 };
 
-export const NewUser = () => {
+const NewUser = () => {
   const [formData, setFormData] = useState<FormData>(initFormData);
   const [state, setState] = useState<State>(initState);
   const show = useToast();
@@ -215,10 +217,35 @@ const column = [
     },
   },
 ];
-export const UsersList = () => {
+
+export default function UsersPage() {
+  const { role } = useCurrentUser();
+  const hash = window.location.hash.substring(1);
+
+  useEffect(() => {
+    if (hash) {
+      setTimeout(() => {
+        const div = document.getElementById(hash);
+        if (!div) return;
+        const yOffset = -100;
+        const y = div.getBoundingClientRect().top + window.scrollY + yOffset;
+
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }, 100);
+    }
+  }, [hash]);
+
+  if (role !== Role.Admin) {
+    return (
+      <div className="p-10 rounded-md bg-white">
+        <h1>This page can only be accessed by an admin.</h1>
+      </div>
+    );
+  }
   return (
-    <div className="mt-6 px-6 md:px-10 py-6 bg-white rounded-md">
-      <h1 className=" font-bold  my-2">Registered Users</h1>
+    <div>
+      <NewUser />
+
       <UsersListProvider
         where={{
           field: "status",
@@ -234,31 +261,65 @@ export const UsersList = () => {
             return <div>{value.error}</div>;
           }
           return (
-            <Table
-              columns={column}
-              className="w-full overflow-x-auto"
-              dataSource={value.users.map((user) => ({
-                ...user,
-                info: { name: user.names, id: user.id },
-              }))}
-              pagination={{
-                position: ["bottomRight"],
-                size: "small",
-                pageSize: 6,
-              }}
-            />
+            <div className="mt-6 px-6 md:px-10 py-6 bg-white rounded-md">
+              <h1 className=" font-bold  my-2" id="teachers">
+                Teachers
+              </h1>
+              <Table
+                columns={column}
+                className="w-full overflow-x-auto"
+                dataSource={value.users
+                  .map((user) => ({
+                    ...user,
+                    info: { name: user.names, id: user.id },
+                  }))
+                  .filter((user) => user.role.name === "Teacher")}
+                pagination={{
+                  position: ["bottomRight"],
+                  size: "small",
+                  pageSize: 6,
+                }}
+              />
+              <h1 className=" font-bold  my-2" id="assistants">
+                Teachers' Assistants
+              </h1>
+              <Table
+                columns={column}
+                className="w-full overflow-x-auto"
+                dataSource={value.users
+                  .map((user) => ({
+                    ...user,
+                    info: { name: user.names, id: user.id },
+                  }))
+                  .filter((user) => user.role.name === "Teacher Assistant")}
+                pagination={{
+                  position: ["bottomRight"],
+                  size: "small",
+                  pageSize: 6,
+                }}
+              />
+              <h1 className=" font-bold  my-2" id="po-managers">
+                PO Managers
+              </h1>
+              <Table
+                columns={column}
+                className="w-full overflow-x-auto"
+                dataSource={value.users
+                  .map((user) => ({
+                    ...user,
+                    info: { name: user.names, id: user.id },
+                  }))
+                  .filter((user) => user.role.name === "PO Manager")}
+                pagination={{
+                  position: ["bottomRight"],
+                  size: "small",
+                  pageSize: 6,
+                }}
+              />
+            </div>
           );
         }}
       </UsersListProvider>
-    </div>
-  );
-};
-
-export default function UsersPage() {
-  return (
-    <div>
-      <NewUser />
-      <UsersList />
     </div>
   );
 }

@@ -10,11 +10,13 @@ const IsAddingTeacherModal = ({
   onClose,
   onAdd,
   exclude,
+  select,
 }: {
   open: boolean;
   onClose: () => void;
   onAdd: (id: string, name: string) => void;
   exclude: string[];
+  select: "Teacher" | "Teacher Assistant" | "PO Manager";
 }) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -23,9 +25,10 @@ const IsAddingTeacherModal = ({
   };
   return (
     <Modal open={open} onOk={onClose} onCancel={onClose} footer={null}>
-      <h1 className="font-bold text-lg">Add a new teacher</h1>
+      <h1 className="font-bold text-lg">Add {select}</h1>
       <p>
-        If the teacher you want to add in the system, first add them{" "}
+        If the {select.toLowerCase()} you want to add in the system, first add
+        them{" "}
         <Link to={"/dashboard/users#new"}>
           <span className="text-blue-500">here</span>
         </Link>
@@ -36,7 +39,7 @@ const IsAddingTeacherModal = ({
           value={searchQuery}
           onChange={handleSearch}
           className="rounded-md bg-gray-50  outline-none   px-4 py-2   w-full text-sm shadow-sm"
-          placeholder="Search teacher"
+          placeholder={"Search " + select.toLowerCase()}
         />
         <UsersListProvider
           customQuery={query(
@@ -52,10 +55,12 @@ const IsAddingTeacherModal = ({
             if (value.error) {
               return <div>{value.error}</div>;
             }
-            const users = value.users.filter((tr) => !exclude.includes(tr.id));
+            const users = value.users.filter(
+              (tr) => !exclude.includes(tr.id) && tr.role.name === select
+            );
 
             if (!users.length) {
-              return <Empty description="Teacher not found" />;
+              return <Empty description={select + " not found"} />;
             }
             return users.map((data, index) => (
               <div

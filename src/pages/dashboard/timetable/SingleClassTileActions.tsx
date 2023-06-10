@@ -3,6 +3,8 @@ import { TrClass } from "../../../interfaces/trClass";
 import { Popconfirm } from "antd";
 import { deleteDoc, doc } from "firebase/firestore";
 import { firestore } from "../../../lib/config";
+import { useCurrentUser } from "../../../lib/hooks/auth";
+import { Role } from "../../../lib/utils";
 
 interface Props {
   trClass: TrClass;
@@ -19,23 +21,29 @@ const SingleClassTileActions: FC<Props> = ({ trClass, onEdit }) => {
     setLoading(false);
     setShowPopup(false);
   };
+
+  const { role } = useCurrentUser();
   return (
     <div className="flex space-x-2">
-      <button className="w-6 h-6 " onClick={onEdit}>
-        <img src="/icons/edit.svg" />
-      </button>
-      <Popconfirm
-        title="Remove this class ?"
-        description="Are you sure want to remove this class on timetable?"
-        open={showPopup}
-        onConfirm={handleConfirm}
-        okButtonProps={{ loading, danger: true }}
-        onCancel={() => setShowPopup(false)}
-      >
-        <button onClick={() => setShowPopup(true)}>
-          <img src="/icons/delete.svg" />
+      {(role === Role.Admin || role === Role.PoManager) && (
+        <button className="w-6 h-6 " onClick={onEdit}>
+          <img src="/icons/edit.svg" />
         </button>
-      </Popconfirm>
+      )}
+      {role === Role.Admin && (
+        <Popconfirm
+          title="Remove this class ?"
+          description="Are you sure want to remove this class on timetable?"
+          open={showPopup}
+          onConfirm={handleConfirm}
+          okButtonProps={{ loading, danger: true }}
+          onCancel={() => setShowPopup(false)}
+        >
+          <button onClick={() => setShowPopup(true)}>
+            <img src="/icons/delete.svg" />
+          </button>
+        </Popconfirm>
+      )}
     </div>
   );
 };

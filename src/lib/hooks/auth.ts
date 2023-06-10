@@ -6,6 +6,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { Account } from "../../interfaces/account";
 import { Keys } from "../keys";
 import useGlobalCtx from "../../providers/GlobalContext";
+import Utils from "../utils";
 
 export interface AppAuth {
   user: User | null;
@@ -61,7 +62,11 @@ const useAuth = () => {
 
 export const useCurrentUser = () => {
   const { auth } = useGlobalCtx();
-  return { account: auth?.account, user: auth?.user };
+  return {
+    account: auth?.account,
+    user: auth?.user,
+    role: Utils.getRole(auth?.account?.role.name || ""),
+  };
 };
 
 export default useAuth;

@@ -11,6 +11,8 @@ import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { firestore } from "../../../lib/config";
 import { useToast } from "../../../providers/GlobalContext";
+import { useCurrentUser } from "../../../lib/hooks/auth";
+import { Role } from "../../../lib/utils";
 
 const timeTableColumns: {
   title: string;
@@ -109,6 +111,8 @@ const timeTableColumns: {
 ];
 
 export default function TimeTablePage() {
+  const { role } = useCurrentUser();
+
   const [sidebarState, setSidebarState] = useState<SidebarProps>({
     open: false,
     trClass: null,
@@ -121,7 +125,7 @@ export default function TimeTablePage() {
   function handleOpenSidebar(trClass: TrClass | null) {
     setSidebarState((prev) => ({
       ...prev,
-      open: true,
+      open: role !== Role.Teacher,
       trClass,
       onClose: handleCloseSidebar,
     }));
@@ -142,6 +146,7 @@ export default function TimeTablePage() {
           });
           return;
         }
+
         handleOpenSidebar({ ...trClass, date: (trClass.date as any).toDate() });
       } catch (error: any) {
         show({
@@ -150,22 +155,33 @@ export default function TimeTablePage() {
         });
       }
     };
-    if (id) {
+    if (id && role !== Role.Teacher) {
       getClass(id);
     }
   }, [id]);
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="font-bold text-lg">Teachers Schedule</h1>
-        <button
-          className="bg-primary text-white px-4 py-2 rounded"
-          onClick={() => handleOpenSidebar(null)}
-        >
-          Add New
-        </button>
-      </div>
+      {role === Role.Admin ? (
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="font-bold text-lg">Teachers Schedule</h1>
+          <button
+            className="bg-primary text-white px-4 py-2 rounded"
+            onClick={() => handleOpenSidebar(null)}
+          >
+            Add New
+          </button>
+        </div>
+      ) : (
+        <h1 className="font-bold text-lg mb-4">
+          {role === Role.PoManager
+            ? "Teachers Schedule"
+            : role === Role.Assistant
+            ? "My Assisting Schedule"
+            : "My Teaching Schedule"}
+        </h1>
+      )}
+
       <div className="bg-white rounded-md w-full">
         <TeacherClassesProvider>
           {(value) => {
@@ -205,19 +221,28 @@ export default function TimeTablePage() {
                 }}
                 className="w-full overflow-x-auto"
               >
-                {timeTableColumns.map((column) => (
-                  <Column {...column} />
-                ))}
-                <Column
-                  title="Action"
-                  key="action"
-                  render={(_: any, record: TrClass) => (
-                    <SingleClassTileActions
-                      trClass={record}
-                      onEdit={(_) => handleOpenSidebar(record)}
-                    />
-                  )}
-                />
+                {timeTableColumns.map((column) => {
+                  if (column.key === "teacherId" && role === Role.Teacher) {
+                    return null;
+                  }
+                  if (column.key === "assistant" && role === Role.Assistant) {
+                    return null;
+                  }
+                  return <Column {...column} />;
+                })}
+
+                {(role === Role.Admin || role === Role.PoManager) && (
+                  <Column
+                    title="Action"
+                    key="action"
+                    render={(_: any, record: TrClass) => (
+                      <SingleClassTileActions
+                        trClass={record}
+                        onEdit={(_) => handleOpenSidebar(record)}
+                      />
+                    )}
+                  />
+                )}
               </Table>
             );
           }}

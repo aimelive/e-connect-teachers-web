@@ -10,6 +10,8 @@ import { Keys } from "../../../lib/keys";
 import { addDoc, collection } from "firebase/firestore";
 import { firestore } from "../../../lib/config";
 import { Feedback } from "../../../interfaces/feedback";
+import { useCurrentUser } from "../../../lib/hooks/auth";
+import { Role } from "../../../lib/utils";
 
 const SingleClass = () => {
   const { id } = useParams();
@@ -20,6 +22,7 @@ const SingleClass = () => {
     value: string;
   }>({ show: false, to: null, loading: false, value: "" });
   const show = useToast();
+  const { account: current, role } = useCurrentUser();
 
   const handleOk = async () => {
     if (!showAddFeedbackModal.value || showAddFeedbackModal.loading) return;
@@ -143,19 +146,21 @@ const SingleClass = () => {
                               <p>{value.account?.role?.name}</p>
                               <p className="text-xs">{value.account?.tel}</p>
                             </div>
-                            <div
-                              className="p-2 hover:bg-slate-100 cursor-pointer rounded-full"
-                              onClick={() => {
-                                setShowAddFeedbackModal((prev) => ({
-                                  ...prev,
-                                  show: true,
-                                  to: "Teacher",
-                                  value: "",
-                                }));
-                              }}
-                            >
-                              <img src="/icons/menu/chat.svg" width={20} />
-                            </div>
+                            {current?.id !== value.account?.id && (
+                              <div
+                                className="p-2 hover:bg-slate-100 cursor-pointer rounded-full"
+                                onClick={() => {
+                                  setShowAddFeedbackModal((prev) => ({
+                                    ...prev,
+                                    show: true,
+                                    to: "Teacher",
+                                    value: "",
+                                  }));
+                                }}
+                              >
+                                <img src="/icons/menu/chat.svg" width={20} />
+                              </div>
+                            )}
                           </div>
                         );
                       }}
@@ -183,19 +188,21 @@ const SingleClass = () => {
                               <p>{value.account?.role?.name}</p>
                               <p className="text-xs">{value.account?.tel}</p>
                             </div>
-                            <div
-                              className="p-2 hover:bg-slate-100 cursor-pointer rounded-full"
-                              onClick={() => {
-                                setShowAddFeedbackModal((prev) => ({
-                                  ...prev,
-                                  show: true,
-                                  to: "Teacher Assistant",
-                                  value: "",
-                                }));
-                              }}
-                            >
-                              <img src="/icons/menu/chat.svg" width={20} />
-                            </div>
+                            {current?.id !== value.account?.id && (
+                              <div
+                                className="p-2 hover:bg-slate-100 cursor-pointer rounded-full"
+                                onClick={() => {
+                                  setShowAddFeedbackModal((prev) => ({
+                                    ...prev,
+                                    show: true,
+                                    to: "Teacher Assistant",
+                                    value: "",
+                                  }));
+                                }}
+                              >
+                                <img src="/icons/menu/chat.svg" width={20} />
+                              </div>
+                            )}
                           </div>
                         );
                       }}
@@ -206,12 +213,14 @@ const SingleClass = () => {
                   <div className="my-3">
                     <div className="flex items-center justify-between">
                       <h1 className="font-[500]">Lesson Files</h1>
-                      <Link
-                        to={"/dashboard/time-table?id=" + id}
-                        className="text-xs underline text-primary"
-                      >
-                        Add a file
-                      </Link>
+                      {role !== Role.Teacher && (
+                        <Link
+                          to={"/dashboard/time-table?id=" + id}
+                          className="text-xs underline text-primary"
+                        >
+                          Add a file
+                        </Link>
+                      )}
                     </div>
 
                     <div className="grid gap-2 py-2">

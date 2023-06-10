@@ -1,5 +1,12 @@
 import { ChatMessage, UserChatMessage } from "../interfaces/chat";
 
+export enum Role {
+  Teacher,
+  Assistant,
+  PoManager,
+  Admin,
+}
+
 export default class Utils {
   static compareObj(obj1: any, obj2: any) {
     return Object.entries(obj2).reduce((acc: any, [key, value]) => {
@@ -56,5 +63,18 @@ export default class Utils {
       return true;
     }
     return false;
+  }
+
+  static getRole(role: string): Role {
+    switch (role) {
+      case "Admin":
+        return Role.Admin;
+      case "Teacher Assistant":
+        return Role.Assistant;
+      case "PO Manager":
+        return Role.PoManager;
+      default:
+        return Role.Teacher;
+    }
   }
 }

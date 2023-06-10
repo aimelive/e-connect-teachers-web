@@ -14,7 +14,9 @@ export default function MessagesPage() {
   return (
     <>
       {" "}
-      <div className="md:hidden">Use our mobile app for chats on mobile devices.</div>
+      <div className="md:hidden">
+        Use our mobile app for chats on mobile devices.
+      </div>
       <div className="bg-white rounded-md p-10 md:grid md:grid-cols-2 w-full h-full hidden">
         <ChatsContextProvider>
           {(value) => {

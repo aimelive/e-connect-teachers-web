@@ -19,7 +19,6 @@ export default function SingleUser() {
           return <UserDetailsSection account={value.account} />;
         }}
       </SingleUserContextProvider>
-      
     </div>
   );
 }

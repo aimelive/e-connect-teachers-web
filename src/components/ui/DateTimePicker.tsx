@@ -4,9 +4,10 @@ import { DatePicker } from "antd";
 
 const DateTimePicker = ({
   value,
-  onChange,
+  onChange,disabled
 }: {
   value: Date;
+  disabled?: boolean;
   onChange: (value: Date) => void;
 }) => {
   const range = (start: number, end: number) => {
@@ -35,6 +36,7 @@ const DateTimePicker = ({
       </span>
       <DatePicker
         format="YYYY-MM-DD HH:mm:ss"
+        disabled={disabled}
         disabledDate={disabledDate}
         disabledTime={disabledDateTime}
         value={dayjs(value)}

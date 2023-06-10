@@ -1,8 +1,16 @@
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import {
+  QueryFieldFilterConstraint,
+  collection,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
 import React, { createContext, useEffect, useState } from "react";
 import { firestore } from "../lib/config";
-// import { useCurrentUser } from "../lib/hooks/auth";
+import { useCurrentUser } from "../lib/hooks/auth";
 import { TrClass } from "../interfaces/trClass";
+import { useSchools } from "./SchoolsProvider";
+import { Role } from "../lib/utils";
 
 interface ContextValue {
   isLoading: boolean;
@@ -27,10 +35,29 @@ export const TeacherClassesProvider = ({
     error: null,
   });
 
-  // const { account } = useCurrentUser();
+  const { account, role } = useCurrentUser();
+  const { schools } = useSchools();
 
   useEffect(() => {
-    const q = query(collection(firestore, "classes"), where("id", "!=", ""));
+    let customWhere: QueryFieldFilterConstraint = where(
+      "teacherId",
+      "==",
+      account?.id
+    );
+    if (role == Role.Assistant) {
+      customWhere = where("trAssistantId", "==", account?.id);
+    }
+    if (role === Role.PoManager) {
+      customWhere = where(
+        "schoolId",
+        "array-contains",
+        schools.length ? schools.map((val) => val.id) : ["none-none"]
+      );
+    }
+    if (role === Role.Admin) {
+      customWhere = where("id", "!=", "");
+    }
+    const q = query(collection(firestore, "classes"), customWhere);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const trClassesData: TrClass[] = [];
       querySnapshot.forEach((doc) => {
@@ -54,7 +81,7 @@ export const TeacherClassesProvider = ({
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [schools.length]);
 
   return (
     <TeacherClassesContext.Provider value={trClasses}>

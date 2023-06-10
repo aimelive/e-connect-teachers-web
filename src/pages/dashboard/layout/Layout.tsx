@@ -8,9 +8,10 @@ import { MenuItem, menuItems } from "./data/menuItems";
 import { NotificationsPanel } from "./Notifications";
 import { UserProfilePanel } from "./UserProfilePanel";
 import Badge from "../messages/Badge";
+import { Role } from "../../../lib/utils";
 
 export default function DashboardLayout() {
-  const { account } = useCurrentUser();
+  const { account, role } = useCurrentUser();
   const { notifications: userNotifications, unread } = useNotifications();
   const [activeItem, setActiveItem] = useState<MenuItem>(menuItems[0]);
   const [showModal, setShowModal] = useState(false);
@@ -22,6 +23,7 @@ export default function DashboardLayout() {
         <div className="flex flex-col mt-8 md:px-4">
           {menuItems.map((item, index) => {
             const isActive = activeItem.url === item.url;
+            if (item.url === "/users" && role !== Role.Admin) return null;
             return (
               <Link
                 className={`font-medium transition capitalize flex items-center space-x-4 p-3 hover:opacity-60 ${
@@ -113,7 +115,7 @@ export default function DashboardLayout() {
                   alt="#"
                   className="opacity-60"
                 />
-                {unread && (
+                {unread !== 0 && (
                   <div className="bg-red-600 w-4 h-4 rounded-full flex items-center justify-center text-xs text-white absolute -top-1 -right-1 z-10">
                     {unread}
                   </div>
@@ -125,11 +127,11 @@ export default function DashboardLayout() {
               className="shadow-none"
               style={{ boxShadow: "none" }}
               content={<UserProfilePanel />}
-              title="User Profile"
+              title="Account"
               placement="top"
               trigger="click"
             >
-              <div className="flex items-center gap-2  cursor-pointer hover:bg-gray-100 p-1 pr-3 rounded-full">
+              <div className="flex items-center gap-2  cursor-pointer hover:bg-gray-100 p-1 pr-5 rounded-full">
                 <img
                   src={account?.profile_pic}
                   width={34}
@@ -137,9 +139,12 @@ export default function DashboardLayout() {
                   alt={account?.names}
                   className="rounded-full border bg-gray-50 h-10 w-10"
                 />
-                <span className="font-medium text-brand hidden md:block">
-                  {account?.names}
-                </span>
+                <p className="flex flex-col whitespace-nowrap">
+                  <span className="font-medium text-brand hidden md:block">
+                    {account?.names}
+                  </span>
+                  <span className="text-xs">{account?.role.name}</span>
+                </p>
               </div>
             </Popover>
           </div>

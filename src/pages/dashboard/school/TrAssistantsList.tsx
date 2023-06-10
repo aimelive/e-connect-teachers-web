@@ -36,10 +36,10 @@ const columns = [
   },
 ];
 
-export const TeachersList: FC<{ teachers: string[]; schoolId: string }> = ({
-  schoolId,
-  teachers,
-}) => {
+export const TeachersAssistantList: FC<{
+  teachers: string[];
+  schoolId: string;
+}> = ({ schoolId, teachers }) => {
   const [isAddingTeacher, setIsAddingTeacher] = useState(false);
   const show = useToast();
   const { role } = useCurrentUser();
@@ -103,7 +103,7 @@ export const TeachersList: FC<{ teachers: string[]; schoolId: string }> = ({
           return (
             <>
               <div className="flex items-center justify-between">
-                <h1 className="font-bold text-lg my-2">School Teachers</h1>
+                <h1 className="font-bold text-lg my-2">Teachers' Assistants</h1>
                 {isManager && (
                   <button
                     className="px-4 rounded-full  py-3  bg-brand text-white"
@@ -113,7 +113,7 @@ export const TeachersList: FC<{ teachers: string[]; schoolId: string }> = ({
                   </button>
                 )}
                 <IsAddingTeacherModal
-                  select="Teacher"
+                  select="Teacher Assistant"
                   open={isAddingTeacher}
                   onClose={() => setIsAddingTeacher(false)}
                   onAdd={(id) => handleAddTeacher(id)}
@@ -122,7 +122,7 @@ export const TeachersList: FC<{ teachers: string[]; schoolId: string }> = ({
               </div>
               <Table
                 dataSource={value.users.filter(
-                  (user) => user.role.name === "Teacher"
+                  (user) => user.role.name === "Teacher Assistant"
                 )}
                 pagination={{
                   position: ["bottomRight"],

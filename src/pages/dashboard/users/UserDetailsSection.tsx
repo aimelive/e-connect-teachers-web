@@ -1,18 +1,20 @@
 import { ChangeEvent, FC, useEffect, useState } from "react";
 import { Account } from "../../../interfaces/account";
 import { useToast } from "../../../providers/GlobalContext";
-import Utils from "../../../lib/utils";
+import Utils, { Role } from "../../../lib/utils";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { firestore } from "../../../lib/config";
 import { useNavigate } from "react-router-dom";
 import { Keys } from "../../../lib/keys";
 import { Button, Modal } from "antd";
+import { useCurrentUser } from "../../../lib/hooks/auth";
 
 const UserDetailsSection: FC<{ account: Account }> = ({ account }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [accountData, setAccountData] = useState<Account>(account);
   const show = useToast();
+  const { account: currentUser, role } = useCurrentUser();
 
   const handleSaveChanges = async () => {
     const newObj = Utils.compareObj(account, accountData);
@@ -114,7 +116,7 @@ const UserDetailsSection: FC<{ account: Account }> = ({ account }) => {
                 alt={account.names}
                 width={50}
                 height={50}
-                className="object-cover w-16 h-16 rounded-full"
+                className="object-cover w-16 h-16 rounded-full m-1"
               />
             ) : (
               <input
@@ -126,113 +128,128 @@ const UserDetailsSection: FC<{ account: Account }> = ({ account }) => {
               />
             )}
           </div>
-
-          <h1 className="font-[500]">Phone number</h1>
-          {!isEditing ? (
-            <p className=""> {account.tel}</p>
-          ) : (
-            <input
-              defaultValue={accountData.tel}
-              className="px-4 py-2 border-b border-slate-200 outline-none bg-gray-50 w-full"
-              disabled={loading}
-              name="tel"
-              onChange={handleChange}
-            />
-          )}
         </div>
-        <div className="my-3">
-          <h1 className="font-[500]">Role</h1>
-          {!isEditing ? (
-            <p className=""> {account.role.name}</p>
-          ) : (
-            <select
-              name="role.name"
-              disabled={loading}
-              value={accountData.role.name}
-              onChange={handleChange}
-              id="role"
-              className="rounded-md bg-gray-50  outline-none   px-4 py-2   w-full text-sm shadow-sm"
-            >
-              <option value="Teacher">TEACHER</option>
-              <option value="Teacher Assistant">TEACHER ASSISTANT</option>
-              <option value="PO Manager">PO-MANAGER</option>
-            </select>
-          )}
-        </div>
-        <div className="flex items-center gap-4 mt-3">
-          {!isEditing ? (
-            <button
-              className="px-4 rounded-full w-fit flex items-center gap-2 py-3 bg-gray-100 "
-              disabled={loading}
-              onClick={() => setIsEditing(true)}
-            >
-              <img src="/icons/edit.svg" alt="" className="w-4 h-4" />
-              Edit
-            </button>
-          ) : (
-            <>
-              <button
-                className="px-4 rounded-full w-fit flex items-center gap-2 py-3 bg-brand text-white "
-                disabled={loading}
-                onClick={handleSaveChanges}
-              >
-                {loading ? "Please wait..." : "Save"}
-              </button>
-              <button
-                className="px-4 rounded-full w-fit flex items-center gap-2 py-3 bg-gray-100 text-black "
-                disabled={loading}
-                onClick={() => {
-                  setIsEditing(false);
-                  setAccountData(account);
-                }}
-              >
-                Cancel
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-      <hr />
-      <h1 className=" font-bold text-lg my-6">Danger zone</h1>
-      <div className="flex items-start space-y-2 sm:space-y-0 sm:items-center flex-col sm:flex-row justify-between bg-red-50 rounded-md p-4">
         <div>
-          <h1 className=" font-bold">Delete user</h1>
-          <p className="">This action can't be undone </p>
+          <div>
+            <h1 className="font-[500]">Phone number</h1>
+            {!isEditing ? (
+              <p className=""> {account.tel}</p>
+            ) : (
+              <input
+                defaultValue={accountData.tel}
+                className="px-4 py-2 border-b border-slate-200 outline-none bg-gray-50 w-full"
+                disabled={loading}
+                name="tel"
+                onChange={handleChange}
+              />
+            )}
+          </div>
+          {
+            <div className="my-3">
+              <h1 className="font-[500]">Role</h1>
+              {!isEditing ? (
+                <p className=""> {account.role.name}</p>
+              ) : (
+                role === Role.Admin &&
+                account.role.name != "Admin" && (
+                  <select
+                    name="role.name"
+                    disabled={loading}
+                    value={accountData.role.name}
+                    onChange={handleChange}
+                    id="role"
+                    className="rounded-md bg-gray-50  outline-none   px-4 py-2   w-full text-sm shadow-sm"
+                  >
+                    <option value="Teacher">TEACHER</option>
+                    <option value="Teacher Assistant">TEACHER ASSISTANT</option>
+                    <option value="PO Manager">PO-MANAGER</option>
+                  </select>
+                )
+              )}
+            </div>
+          }
         </div>
-        <button
-          className="px-6 py-3 rounded-md bg-red-500 text-white hover:bg-red-600"
-          onClick={showModal}
-        >
-          Delete
-        </button>
-        <Modal
-          title="Confirm Delete."
-          open={isModalOpen}
-          onOk={handleOk}
-          onCancel={handleCancel}
-          footer={[
-            <Button key="back" onClick={handleCancel} danger>
-              Cancel
-            </Button>,
-            <Button
-              key="submit"
-              type="primary"
-              loading={isLoading}
-              onClick={handleOk}
-              className="bg-red-500"
-              danger
+
+        {(role === Role.Admin || account.id === currentUser?.id) && (
+          <div className="flex items-center gap-4 mt-3">
+            {!isEditing ? (
+              <button
+                className="px-4 rounded-full w-fit flex items-center gap-2 py-3 bg-gray-100 "
+                disabled={loading}
+                onClick={() => setIsEditing(true)}
+              >
+                <img src="/icons/edit.svg" alt="" className="w-4 h-4" />
+                Edit
+              </button>
+            ) : (
+              <>
+                <button
+                  className="px-4 rounded-full w-fit flex items-center gap-2 py-3 bg-brand text-white "
+                  disabled={loading}
+                  onClick={handleSaveChanges}
+                >
+                  {loading ? "Please wait..." : "Save"}
+                </button>
+                <button
+                  className="px-4 rounded-full w-fit flex items-center gap-2 py-3 bg-gray-100 text-black "
+                  disabled={loading}
+                  onClick={() => {
+                    setIsEditing(false);
+                    setAccountData(account);
+                  }}
+                >
+                  Cancel
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+      {account.id !== currentUser?.id && role === Role.Admin && (
+        <>
+          <hr />
+          <h1 className=" font-bold text-lg my-6">Danger zone</h1>
+          <div className="flex items-start space-y-2 sm:space-y-0 sm:items-center flex-col sm:flex-row justify-between bg-red-50 rounded-md p-4">
+            <div>
+              <h1 className=" font-bold">Delete user</h1>
+              <p className="">This action can't be undone </p>
+            </div>
+            <button
+              className="px-6 py-3 rounded-md bg-red-500 text-white hover:bg-red-600"
+              onClick={showModal}
             >
               Delete
-            </Button>,
-          ]}
-        >
-          <p>This action can not be undone and will have an effect.</p>
-          <p>
-            Are you sure do you want to delete{" "}
-            <span className="font-semibold">{account.names}</span> ?
-          </p>
-        </Modal>
-      </div>
+            </button>
+            <Modal
+              title="Confirm Delete."
+              open={isModalOpen}
+              onOk={handleOk}
+              onCancel={handleCancel}
+              footer={[
+                <Button key="back" onClick={handleCancel} danger>
+                  Cancel
+                </Button>,
+                <Button
+                  key="submit"
+                  type="primary"
+                  loading={isLoading}
+                  onClick={handleOk}
+                  className="bg-red-500"
+                  danger
+                >
+                  Delete
+                </Button>,
+              ]}
+            >
+              <p>This action can not be undone and will have an effect.</p>
+              <p>
+                Are you sure do you want to delete{" "}
+                <span className="font-semibold">{account.names}</span> ?
+              </p>
+            </Modal>
+          </div>
+        </>
+      )}
     </>
   );
 };

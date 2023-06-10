@@ -13,6 +13,8 @@ import AddSchoolInput from "../../../components/ui/AddSchoolInput";
 import { SchoolsProvider } from "../../../providers/SchoolsProvider";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { firestore } from "../../../lib/config";
+import { useCurrentUser } from "../../../lib/hooks/auth";
+import { Role } from "../../../lib/utils";
 
 export interface SidebarProps {
   open: boolean;
@@ -165,6 +167,8 @@ const AddClassFormSidebar: FC<SidebarProps> = ({ open, trClass, onClose }) => {
   };
 
   const [files, setFiles] = useState(2);
+  const { role } = useCurrentUser();
+  const isAssistantOrPO = role === Role.Assistant || role === Role.PoManager;
 
   return (
     <Drawer
@@ -182,12 +186,14 @@ const AddClassFormSidebar: FC<SidebarProps> = ({ open, trClass, onClose }) => {
         <TextInput
           label="Course Title"
           name="name"
+          disabled={isAssistantOrPO}
           placeholder="Add class title"
           value={formData.name}
           onChange={handleChange}
         />
         <DateTimePicker
           value={formData.date}
+          disabled={isAssistantOrPO}
           onChange={(value) => {
             setFormData((prev) => ({ ...prev, date: value }));
           }}
@@ -199,6 +205,7 @@ const AddClassFormSidebar: FC<SidebarProps> = ({ open, trClass, onClose }) => {
           </span>
           <select
             name="duration"
+            disabled={isAssistantOrPO}
             value={formData.duration}
             onChange={handleChange}
             id="duration"
@@ -249,6 +256,7 @@ const AddClassFormSidebar: FC<SidebarProps> = ({ open, trClass, onClose }) => {
         <TextInput
           label="Class Room"
           name="room"
+          disabled={isAssistantOrPO}
           placeholder="np.123"
           value={formData.room}
           onChange={handleChange}
@@ -266,6 +274,7 @@ const AddClassFormSidebar: FC<SidebarProps> = ({ open, trClass, onClose }) => {
               if (value.error) {
                 return (
                   <AddInput
+                    select="Teacher"
                     onChange={(id) =>
                       setFormData((prev) => ({ ...prev, teacherId: id }))
                     }
@@ -285,14 +294,16 @@ const AddClassFormSidebar: FC<SidebarProps> = ({ open, trClass, onClose }) => {
                     <p>{value.account?.names}</p>
                     <p className="text-xs">{value.account?.email}</p>
                   </div>
-                  <button
-                    className="bg-primary px-2 py-1 text-white rounded"
-                    onClick={() => {
-                      setFormData((prev) => ({ ...prev, teacherId: "" }));
-                    }}
-                  >
-                    Remove
-                  </button>
+                  {!(role === Role.Assistant) && (
+                    <button
+                      className="bg-primary px-2 py-1 text-white rounded"
+                      onClick={() => {
+                        setFormData((prev) => ({ ...prev, teacherId: "" }));
+                      }}
+                    >
+                      Remove
+                    </button>
+                  )}
                 </div>
               );
             }}
@@ -311,6 +322,7 @@ const AddClassFormSidebar: FC<SidebarProps> = ({ open, trClass, onClose }) => {
               if (value.error) {
                 return (
                   <AddInput
+                    select="Teacher Assistant"
                     onChange={(id, name) =>
                       setFormData((prev) => ({
                         ...prev,
@@ -335,14 +347,16 @@ const AddClassFormSidebar: FC<SidebarProps> = ({ open, trClass, onClose }) => {
                     <p>{value.account?.names}</p>
                     <p className="text-xs">{value.account?.email}</p>
                   </div>
-                  <button
-                    className="bg-primary px-2 py-1 text-white rounded"
-                    onClick={() => {
-                      setFormData((prev) => ({ ...prev, trAssistantId: "" }));
-                    }}
-                  >
-                    Remove
-                  </button>
+                  {!(role === Role.Assistant) && (
+                    <button
+                      className="bg-primary px-2 py-1 text-white rounded"
+                      onClick={() => {
+                        setFormData((prev) => ({ ...prev, trAssistantId: "" }));
+                      }}
+                    >
+                      Remove
+                    </button>
+                  )}
                 </div>
               );
             }}
@@ -389,14 +403,17 @@ const AddClassFormSidebar: FC<SidebarProps> = ({ open, trClass, onClose }) => {
                     <p>{value.school?.name}</p>
                     <p className="text-xs">{value.school?.description}</p>
                   </div>
-                  <button
-                    className="bg-primary px-2 py-1 text-white rounded"
-                    onClick={() => {
-                      setFormData((prev) => ({ ...prev, schoolId: "" }));
-                    }}
-                  >
-                    Remove
-                  </button>
+                  {!isAssistantOrPO && (
+                    <button
+                      className="bg-primary px-2 py-1 text-white rounded"
+                      disabled={isAssistantOrPO}
+                      onClick={() => {
+                        setFormData((prev) => ({ ...prev, schoolId: "" }));
+                      }}
+                    >
+                      Remove
+                    </button>
+                  )}
                 </div>
               );
             }}

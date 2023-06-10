@@ -3,6 +3,7 @@ import { UserChatMessage } from "../../../interfaces/chat";
 import ChatUserTile from "./ChatUserTile";
 import SelectUserChatModal from "./SelectUserChatModal";
 import { useCurrentUser } from "../../../lib/hooks/auth";
+import { Empty } from "antd";
 
 interface Props {
   chatUsers: UserChatMessage[];
@@ -20,19 +21,28 @@ const UsersChatsSection: FC<Props> = ({
   return (
     <div className="chats px-4 border-r relative h-full">
       <div className="mt-2 h-[70vh] overflow-auto">
-        {chatUsers.map((userChat, index) => {
-          return (
-            <ChatUserTile
-              key={index}
-              userChat={userChat}
-              onClick={() => onSelectUserChat(userChat)}
-              isActive={
-                userChat.latestMessage.groupInfo.id ===
-                currentChatUser?.latestMessage?.groupInfo?.id
-              }
-            />
-          );
-        })}
+        {!chatUsers.length ? (
+          <div className="h-full flex flex-col items-center justify-center">
+            <Empty description="The chat you will select will appear here" />
+            <h1 className="text-center text-slate-400">
+              Click the add button below to select a user to chat with.
+            </h1>
+          </div>
+        ) : (
+          chatUsers.map((userChat, index) => {
+            return (
+              <ChatUserTile
+                key={index}
+                userChat={userChat}
+                onClick={() => onSelectUserChat(userChat)}
+                isActive={
+                  userChat.latestMessage.groupInfo.id ===
+                  currentChatUser?.latestMessage?.groupInfo?.id
+                }
+              />
+            );
+          })
+        )}
       </div>
       <button
         className="w-16 absolute h-16 text-white rounded-full text-4xl bg-brand bottom-0 right-6"

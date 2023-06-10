@@ -22,10 +22,7 @@ const ChatRoomSection: FC<Props> = ({
   if (!currentChatUser || !account) {
     return (
       <div className="h-full flex flex-col items-center justify-center">
-        <Empty />
-        <h1 className="text-center text-slate-400">
-          The chat you will select will appear here
-        </h1>
+        <Empty description="The chat you will select will appear here" />
       </div>
     );
   }
@@ -74,6 +71,10 @@ const ChatRoomSection: FC<Props> = ({
     containerRef.current.scrollTop = containerRef.current?.scrollHeight;
   }, [currentChatUser, chatMessages.length]);
 
+  const iAmReceiver: boolean =
+    currentChatUser.latestMessage.senderId != account?.id &&
+    !currentChatUser.latestMessage.isGroup;
+
   return (
     <div className="chats">
       <div className="px-6 relative h-[60vh]">
@@ -86,9 +87,16 @@ const ChatRoomSection: FC<Props> = ({
           </button>
           <div>
             <h1 className="text-lg font-[500]">
-              {currentChatUser.latestMessage.groupInfo.name}
+              {iAmReceiver
+                ? currentChatUser.latestMessage.senderInfo.name
+                : currentChatUser.latestMessage.groupInfo.name}
             </h1>
-            <p>{currentChatUser.latestMessage.groupInfo.desc}</p>
+            <p>
+             
+              {iAmReceiver
+                ? currentChatUser.latestMessage.senderInfo.desc
+                : currentChatUser.latestMessage.groupInfo.desc}
+            </p>
           </div>
         </div>
         <div

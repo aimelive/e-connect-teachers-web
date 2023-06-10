@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/login";
 import { GlobalContextProvider } from "./providers/GlobalContext";
 import ToastWrapper from "./components/Global/toastwrapper";
-import Schools from "./pages/dashboard/school/schools";
 import Users from "./pages/dashboard/users/Users";
 // import Teachers from "./pages/dashboard/teachers";
 // import Assistants from "./pages/dashboard/assistants";
@@ -20,6 +19,7 @@ import DashboardLayout from "./pages/dashboard/layout/Layout";
 import TimeTablePage from "./pages/dashboard/timetable/TimeTable";
 import MessagesPage from "./pages/dashboard/messages/Messages";
 import SingleClass from "./pages/dashboard/timetable/SingleClass";
+import SchoolsPage from "./pages/dashboard/school/Schools";
 
 function App() {
   return (
@@ -47,7 +47,10 @@ function App() {
                     <Route path="/" element={<DashboardLayout />}>
                       <Route path="/" element={<Redirect to="/dashboard" />} />
                       <Route path="/dashboard" element={<HomePage />} />
-                      <Route path="/dashboard/schools" element={<Schools />} />
+                      <Route
+                        path="/dashboard/schools"
+                        element={<SchoolsPage />}
+                      />
                       <Route
                         path="/dashboard/schools/:id"
                         element={<SingleSchool />}

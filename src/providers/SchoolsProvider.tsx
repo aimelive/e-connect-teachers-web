@@ -1,8 +1,15 @@
-import { collection, onSnapshot, query } from "firebase/firestore";
+import {
+  QueryFieldFilterConstraint,
+  collection,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { firestore } from "../lib/config";
-// import { useCurrentUser } from "../lib/hooks/auth";
+import { useCurrentUser } from "../lib/hooks/auth";
 import { School } from "../interfaces/school";
+import { Role } from "../lib/utils";
 
 interface ContextValue {
   schools: School[];
@@ -16,10 +23,21 @@ export const SchoolsProvider = ({
   children: (value: ContextValue) => React.ReactNode;
 }) => {
   const [schools, setSchools] = useState<School[]>([]);
-  // const { account } = useCurrentUser();
+  const { account, role } = useCurrentUser();
 
   useEffect(() => {
-    const q = query(collection(firestore, "schools"));
+    let customWhere: QueryFieldFilterConstraint = where(
+      "teachers",
+      "array-contains",
+      account?.id
+    );
+    if (role === Role.PoManager) {
+      customWhere = where("poManager", "==", account?.id);
+    }
+    if (role === Role.Admin) {
+      customWhere = where("id", "!=", "");
+    }
+    const q = query(collection(firestore, "schools"), customWhere);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const schoolsData: School[] = [];
       querySnapshot.forEach((doc) => {

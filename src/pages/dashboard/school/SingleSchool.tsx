@@ -8,6 +8,9 @@ import { useState } from "react";
 import { useToast } from "../../../providers/GlobalContext";
 import { deleteDoc, doc } from "firebase/firestore";
 import { firestore } from "../../../lib/config";
+import { useCurrentUser } from "../../../lib/hooks/auth";
+import { Role } from "../../../lib/utils";
+import { TeachersAssistantList } from "./TrAssistantsList";
 
 export default function SingleSchool() {
   const { id } = useParams();
@@ -15,6 +18,7 @@ export default function SingleSchool() {
   const [isLoading, setIsLoading] = useState(false);
   const show = useToast();
   const nav = useNavigate();
+  const { role } = useCurrentUser();
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -78,52 +82,61 @@ export default function SingleSchool() {
                     teachers={value.school.teachers}
                     schoolId={value.school.id}
                   />
-                  <hr />
-                  <h1 className=" font-bold text-lg my-6">Danger zone</h1>
-                  <div className="flex items-center justify-between bg-red-50 rounded-md p-4">
-                    <div>
-                      <h1 className=" font-bold">Delete school</h1>
-                      <p className="">This action can't be undone </p>
-                    </div>
-                    <button
-                      className="px-6 py-3 rounded-md bg-red-500 text-white hover:bg-red-600"
-                      onClick={showModal}
-                    >
-                      Delete
-                    </button>
-                    <Modal
-                      title="Confirm Delete."
-                      open={isModalOpen}
-                      onOk={handleOk}
-                      onCancel={handleCancel}
-                      footer={[
-                        <Button key="back" onClick={handleCancel} danger>
-                          Cancel
-                        </Button>,
-                        <Button
-                          key="submit"
-                          type="primary"
-                          loading={isLoading}
-                          onClick={handleOk}
-                          className="bg-red-500"
-                          danger
+                  <TeachersAssistantList
+                    teachers={value.school.teachers}
+                    schoolId={value.school.id}
+                  />
+                  {role === Role.Admin && (
+                    <>
+                      <hr />
+                      <h1 className=" font-bold text-lg my-6">Danger zone</h1>
+                      <div className="flex items-center justify-between bg-red-50 rounded-md p-4">
+                        <div>
+                          <h1 className=" font-bold">Delete school</h1>
+                          <p className="">This action can't be undone </p>
+                        </div>
+                        <button
+                          className="px-6 py-3 rounded-md bg-red-500 text-white hover:bg-red-600"
+                          onClick={showModal}
                         >
                           Delete
-                        </Button>,
-                      ]}
-                    >
-                      <p>
-                        This action can not be undone and will have an effect.
-                      </p>
-                      <p>
-                        Are you sure do you want to delete{" "}
-                        <span className="font-semibold">
-                          {value.school.name}
-                        </span>{" "}
-                        ?
-                      </p>
-                    </Modal>
-                  </div>
+                        </button>
+                        <Modal
+                          title="Confirm Delete."
+                          open={isModalOpen}
+                          onOk={handleOk}
+                          onCancel={handleCancel}
+                          footer={[
+                            <Button key="back" onClick={handleCancel} danger>
+                              Cancel
+                            </Button>,
+                            <Button
+                              key="submit"
+                              type="primary"
+                              loading={isLoading}
+                              onClick={handleOk}
+                              className="bg-red-500"
+                              danger
+                            >
+                              Delete
+                            </Button>,
+                          ]}
+                        >
+                          <p>
+                            This action can not be undone and will have an
+                            effect.
+                          </p>
+                          <p>
+                            Are you sure do you want to delete{" "}
+                            <span className="font-semibold">
+                              {value.school.name}
+                            </span>{" "}
+                            ?
+                          </p>
+                        </Modal>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </>

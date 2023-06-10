@@ -2,15 +2,14 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import TextInput from "../../../components/ui/input";
 import { Table } from "antd";
 import { Link } from "react-router-dom";
-import {
-  SchoolsProvider,
-  useSchools,
-} from "../../../providers/SchoolsProvider";
+import { SchoolsProvider } from "../../../providers/SchoolsProvider";
 import { Address, School } from "../../../interfaces/school";
 import { State } from "../../../interfaces/loading-state";
 import { addDoc, collection, updateDoc } from "firebase/firestore";
 import { firestore } from "../../../lib/config";
 import { useToast } from "../../../providers/GlobalContext";
+import { useCurrentUser } from "../../../lib/hooks/auth";
+import { Role } from "../../../lib/utils";
 
 const initState: State = { loading: false, error: null };
 
@@ -212,9 +211,7 @@ const column = [
     key: "principalName",
   },
 ];
-export const SchoolsList = () => {
-  const { schools } = useSchools();
-
+export const SchoolsList = ({ schools }: { schools: School[] }) => {
   return (
     <div className="mt-6 p-4 md:px-10 md:py-6 bg-white rounded-md">
       <h1 className=" font-bold  my-2">Registered Schools</h1>
@@ -231,11 +228,14 @@ export const SchoolsList = () => {
   );
 };
 
-export default function Schools() {
+export default function SchoolsPage() {
+  const { role } = useCurrentUser();
   return (
     <div>
-      <NewSchool />
-      <SchoolsProvider>{(_value) => <SchoolsList />}</SchoolsProvider>
+      {role === Role.Admin && <NewSchool />}
+      <SchoolsProvider>
+        {(_value) => <SchoolsList schools={_value.schools} />}
+      </SchoolsProvider>
     </div>
   );
 }
